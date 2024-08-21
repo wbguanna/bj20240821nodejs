@@ -33,7 +33,7 @@
       }
 
       table {
-        border-spacing: 10px;
+        /* border-spacing: 10px; */
         border-collapse: collapse;
         border: 0;
       }
@@ -44,7 +44,7 @@
       }
 
       td {
-        padding: 10px;
+        padding: 30px;
       }
 
       .emplyeeView {
@@ -54,6 +54,10 @@
 
       .btn_batchDelete {
         display: inline;
+      }
+      form,
+      span {
+        display: inline-block;
       }
     </style>
 
@@ -105,8 +109,8 @@
       <hr />
       <div class="emplyeeView">
         <div class="batchControls">
-          <button id="btn_batchDelete" class="btn_batchDelete">선택삭제</button
-          >&nbsp;|&nbsp;
+          <button id="btn_batchDelete" class="btn_batchDelete">선택삭제</button>
+          <span> | </span>
           <form action="/saram/search">
             <label for="search">검색</label>
             <select name="searchType" id="searchType">
