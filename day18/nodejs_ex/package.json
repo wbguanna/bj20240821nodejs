@@ -1,0 +1,15 @@
+{
+  "name": "nodejs_ex",
+  "version": "1.0.0",
+  "main": "ex01_promise.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "conIOtest": "concurrently \node ex07_fs_r.js \node ex07_fs_w.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
