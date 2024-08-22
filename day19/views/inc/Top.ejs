@@ -20,7 +20,13 @@
             <a href="/shop">Shop</a>
         </nav></p>
         
-        <a href="/login">Log-in</a> | 
+        <% if (user === undefined) { %>
+        <a href="/login">Log-in</a>
+        <%}%>
+        <% else { %>
+            <a href="/logout">Log-out</a>
+        <%}%>
+        | 
         <a href="/join">Join-us</a>
     </div>
 </body>

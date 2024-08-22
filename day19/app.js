@@ -101,6 +101,7 @@ router.route("/member").get((req, res) => {
   // 쿠키는 사용자쪽에 전달(res), 세션은 요청 들어올때 생성(req)
   if (req.session.user !== undefined) {
     const user = req.session.user;
+    // TODO: 로그인이 안된상태 처리
     req.app.render("member/Member", { user }, (err, html) => {
       // 렌더링시 객체 전달
       res.end(html);
@@ -112,7 +113,6 @@ router.route("/member").get((req, res) => {
 
 router.route("/login").get((req, res) => {
   req.app.render("member/Login", {}, (err, html) => {
-    // TODO: 클라에서 받은거 저장시켜 전달하기
     // 사용자(접속자)의 로컬에 쿠키가 저장된다.
     res.cookie("user", {
       id: "TestUser",
@@ -125,8 +125,9 @@ router.route("/login").get((req, res) => {
 
 router.route("/login").post((req, res) => {
   console.log(req.body);
-  //todo: 검증 넣기
+  //TODO: 검증 넣기
 
+  // TODO: 클라에서 받은거 저장시켜 전달하기
   const idx = memberList.findIndex((member) => member.id === req.body.id);
   if (idx !== -1) {
     if (memberList[idx].password === req.body.password) {
@@ -154,11 +155,36 @@ router.route("/logout").get((req, res) => {
   console.log("/process/logout 호출됨.");
   if (req.session.user) {
     //로그인 된 상태
-  } else {
-    //로그인 안된 상태
-    req.session.destroy();
+    if (!req.session.user) {
+      console.log("아직 로그인 전 상태입니다.");
+      res.redirect("/login");
+      return;
+    }
   }
+
+  // 세션의 user 정보를 제거해서 logout 처리
+  req.session.destroy((err) => {
+    if (err) throw err;
+    console.log("로그아웃 성공!");
+    res.redirect("/login");
+  });
 });
+
+// Promise 방식
+// router.route("/logout").get(async (req, res) => {
+//   console.log("/process/logout 호출됨.");
+//   if (req.session.user) {
+//     //로그인 된 상태
+//     if (!req.session.user) {
+//       console.log("아직 로그인 전 상태입니다.");
+//       res.redirect("/login");
+//       return;
+//     }
+//   }
+
+//   // 세션의 user 정보를 제거해서 logout 처리
+//   await req.session.destroy();
+// });
 
 router.route("/join").get((req, res) => {
   req.app.render("member/Joinus", {}, (err, html) => {
