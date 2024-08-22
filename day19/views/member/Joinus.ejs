@@ -5,5 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
   </head>
-  <body></body>
+  <body>
+    <%-include('../inc/Top.ejs')%>
+    <div class="container">
+      <h2>회원가입</h2>
+      <form action="/joinus" method="post">
+        <table class="table">
+          <tr>
+            <th>ID</th>
+            <td><input type="text" name="userid" /></td>
+          </tr>
+          <tr>
+            <th>비밀번호</th>
+            <td><input type="password" name="userpw" /></td>
+          </tr>
+          <tr>
+            <th>성명</th>
+            <td><input type="text" name="name" /></td>
+          </tr>
+          <tr>
+            <th>이메일</th>
+            <td><input type="email" name="EMAIL" /></td>
+          </tr>
+          <tr>
+            <th></th>
+            <td><input type="text" /></td>
+          </tr>
+        </table>
+      </form>
+    </div>
+  </body>
 </html>
