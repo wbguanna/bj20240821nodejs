@@ -30,6 +30,8 @@ app.use(
   })
 );
 
+let cnt = 1;
+console.log(`되나? ${cnt++}}`);
 // 임시 데이터
 const memberList = [
   {
@@ -79,6 +81,7 @@ const carList = [
 ];
 let carCnt = 117;
 
+console.log(`되나? ${cnt++}}`);
 router.route("/home").get((req, res) => {
   req.app.render("home/Home", {}, (err, html) => {
     res.end(html);
@@ -219,6 +222,8 @@ router.route("/shop/modify").get((req, res) => {
   });
 });
 router.route("/shop/detail").get((req, res) => {
+  // 쿼리로 전송된 데이터는 모두 문자열이다.
+  // parseInt() 필수 "56" <-- 이런 문자열 숫자를 numeric 이라 한다..
   const _id = req.query._id;
   const idx = carList.findIndex((car) => _id === car._id);
   if (idx === -1) {
@@ -242,8 +247,10 @@ router.route("/shop/cart").get((req, res) => {
   });
 });
 
+console.log(`되나? ${cnt++}}`);
 app.use("/", router);
 
+console.log(`되나? ${cnt++}}`);
 // 라우터 설정이 끝나고 나서 들어가야 됨
 // 등록되지 않은 패스에 대해
 app.use("*", (req, res) => {

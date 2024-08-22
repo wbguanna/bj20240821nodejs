@@ -1,8 +1,10 @@
 <!-- <nav>목록 | 입력 | 수정 | 상세보기 | 삭제 | 장바구니</nav> -->
 
+<!-- queryString 부분 ejs 로 처리하려고 하는데 car.id를 불러 올 수 있을까? -->
 <nav>
-  <a href="/shop">목록</a> | <a href="/shop">입력</a> |
-  <a href="/shop">수정</a> | <a href="/shop">상세보기</a> |
-  <a href="/shop">삭제</a> |
-  <a href="/shop">장바구니</a>
+  <a href="/shop">목록</a> | <a href="/shop/insert">입력</a> |
+  <a href="/shop/modify?_id<%=car.id%>">수정</a> |
+  <a href="/shop/delete?_id<%=car.id%>">삭제</a> |
+  <a href="/shop/detail?_id<%=car.id%>">상세보기</a> |
+  <a href="/shop/<%=session.userid%>/cart">장바구니</a>
 </nav>

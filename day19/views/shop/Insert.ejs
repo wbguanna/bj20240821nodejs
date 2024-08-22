@@ -9,8 +9,32 @@
     <%-include('../inc/Top.ejs') %>
     <hr />
     <div class="container">
-      <h2>Shop</h2>
+      <h2>입력</h2>
       <%-include('./ShopNav.ejs') %>
+      <form action="/shop/insert" method="post">
+        <table class="table">
+          <tr>
+            <th>ID</th>
+            <td><%=car._id %></td>
+          </tr>
+          <tr>
+            <th>name</th>
+            <td><%=car.name %></td>
+          </tr>
+          <tr>
+            <th>price</th>
+            <td><%=car.price %></td>
+          </tr>
+          <tr>
+            <th>year</th>
+            <td><%=car.year %></td>
+          </tr>
+          <tr>
+            <th>company</th>
+            <td><%=car.company %></td>
+          </tr>
+        </table>
+      </form>
     </div>
   </body>
 </html>
