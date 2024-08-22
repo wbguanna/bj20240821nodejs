@@ -102,6 +102,7 @@ router.route("/member").get((req, res) => {
   if (req.session.user !== undefined) {
     const user = req.session.user;
     req.app.render("member/Member", { user }, (err, html) => {
+      // 렌더링시 객체 전달
       res.end(html);
     });
   } else {
