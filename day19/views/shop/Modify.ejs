@@ -3,38 +3,48 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Shop</title>
   </head>
   <body>
-    <%-include('../inc/Top.ejs') %>
+    <%-include('./inc/Top.ejs') %>
     <hr />
+
     <div class="container">
-      <h2>수정</h2>
-      <%-include('./ShopNav.ejs') %>
+      <h2>상품 정보 수정</h2>
       <form action="/shop/modify" method="post">
+        <input type="hidden" name="_id" value="<%=car._id %>" />
         <table class="table">
           <tr>
             <th>ID</th>
             <td><%=car._id %></td>
           </tr>
           <tr>
-            <th>name</th>
-            <td><%=car.name %></td>
+            <th>NAME</th>
+            <td><input type="text" name="name" value="<%=car.name %>" /></td>
           </tr>
           <tr>
-            <th>price</th>
-            <td><%=car.price %></td>
+            <th>PRICE</th>
+            <td><input type="text" name="price" value="<%=car.price %>" /></td>
           </tr>
           <tr>
-            <th>year</th>
-            <td><%=car.year %></td>
+            <th>YEAR</th>
+            <td><input type="text" name="year" value="<%=car.year %>" /></td>
           </tr>
           <tr>
-            <th>company</th>
-            <td><%=car.company %></td>
+            <th>COMPANY</th>
+            <td>
+              <input type="text" name="company" value="<%=car.company %>" />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <input type="submit" value="수정 완료" />
+            </td>
           </tr>
         </table>
       </form>
+      <hr />
+      <%-include('./ShopNav.ejs') %>
     </div>
   </body>
 </html>
