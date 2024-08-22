@@ -2,7 +2,8 @@ const http = require("http");
 const express = require("express");
 const app = express();
 const path = require("path");
-// const bodyParser = require("body-parser");
+const bodyParser = require("body-parser");
+const router = express.Router();
 
 app.set("port", 3000);
 app.set("views", path.join(__dirname, "views")); // 절대경로 // 작업디렉토리가 바뀐다면 이게 나을 수 있음
@@ -12,8 +13,10 @@ app.set("view engine", "ejs");
 app.use(express.static("public")); // public 폴더 정적 제공
 
 // 4.16.1 버전 이후로 bodyParser가 내장되어있다함..
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 const memberList = [
   {
@@ -48,40 +51,40 @@ const memberList = [
 
 let noCnt = 105;
 
-app.get("/home", (req, res) => {
+router.route("/home").get((req, res) => {
   req.app.render("home/Home", {}, (err, html) => {
     res.end(html);
   });
 });
 
-app.get("/gallery", (req, res) => {
+router.route("/gallery").get((req, res) => {
   req.app.render("gallery/Gallery", {}, (err, html) => {
     res.end(html);
   });
 });
-app.get("/member", (req, res) => {
+router.route("/member").get((req, res) => {
   req.app.render("member/Member", {}, (err, html) => {
     res.end(html);
   });
 });
-app.get("/profile", (req, res) => {
+router.route("/profile").get((req, res) => {
   req.app.render("profile/Profile", {}, (err, html) => {
     res.end(html);
   });
 });
-app.get("/shop", (req, res) => {
+router.route("/shop").get((req, res) => {
   req.app.render("shop/Shop", {}, (err, html) => {
     res.end(html);
   });
 });
 
-app.get("/login", (req, res) => {
+router.route("/login").get((req, res) => {
   req.app.render("member/Login", {}, (err, html) => {
     res.end(html);
   });
 });
 
-app.post("/login", (req, res) => {
+router.route("/login").post((req, res) => {
   console.log(req.body);
   //todo: 검증 넣기
 
@@ -96,17 +99,20 @@ app.post("/login", (req, res) => {
     res.end(html);
   });
 });
-app.get("/join", (req, res) => {
+
+router.route("/join").get((req, res) => {
   req.app.render("member/Joinus", {}, (err, html) => {
     res.end(html);
   });
 });
 
-app.post("/join", (req, res) => {
+router.route("/join").post((req, res) => {
   req.app.render("member/Joinus", {}, (err, html) => {
     res.end(html);
   });
 });
+
+app.use("/", router);
 
 const server = http.createServer(app);
 server.listen(app.get("port"), () => {
