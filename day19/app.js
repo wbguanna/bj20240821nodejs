@@ -8,7 +8,7 @@ const cookieParser = require("cookie-parser");
 const expressSession = require("express-session");
 
 app.set("port", 3000);
-app.set("views", path.join(__dirname, "views")); // 절대경로 // 작업디렉토리가 바뀐다면 이게 나을 수 있음
+// app.set("views", path.join(__dirname, "views")); // 절대경로 // 작업디렉토리가 바뀐다면 이게 나을 수 있음
 app.set("views", "views"); // 상대경로 // 보안?
 app.set("view engine", "ejs");
 
@@ -20,7 +20,6 @@ app.use(express.static("public")); // public 폴더 정적 제공
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 // 쿠키 사용 미들웨어 설정
-app.use(cookieParser());
 app.use(cookieParser());
 app.use(
   expressSession({
@@ -84,7 +83,12 @@ let carCnt = 117;
 console.log(`되나? ${cnt++}}`);
 router.route("/home").get((req, res) => {
   req.app.render("home/Home", {}, (err, html) => {
-    res.end(html);
+    if (err) {
+      console.error(err);
+      res.status(500).send("Error rendering the page");
+    } else {
+      res.end(html);
+    }
   });
 });
 
@@ -100,15 +104,15 @@ router.route("/profile").get((req, res) => {
 });
 
 // 예시 uri 상품정보 라우팅
-router.route("/process/product").get((req, res) => {
-  console.log("/process/product 호출.");
+// router.route("/process/product").get((req, res) => {
+//   console.log("/process/product 호출.");
 
-  if (req.session.user === undefined) {
-    res.redirect("/public/login2.html");
-  } else {
-    res.redirect("/public/product.html");
-  }
-});
+//   if (req.session.user === undefined) {
+//     res.redirect("/public/login2.html");
+//   } else {
+//     res.redirect("/public/product.html");
+//   }
+// });
 
 router.route("/member").get((req, res) => {
   // 로그인이 되어있다면 member 페이지를 보여준다.
@@ -138,7 +142,7 @@ router.route("/login").get((req, res) => {
 });
 
 router.route("/login").post((req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   //TODO: 검증 넣기
 
   // TODO: 클라에서 받은거 저장시켜 전달하기
@@ -170,13 +174,11 @@ router.route("/login").post((req, res) => {
 
 router.route("/logout").get((req, res) => {
   console.log("/process/logout 호출됨.");
-  if (req.session.user) {
-    //로그인 된 상태
-    if (!req.session.user) {
-      console.log("아직 로그인 전 상태입니다.");
-      res.redirect("/login");
-      return;
-    }
+  //로그인 된 상태
+  if (!req.session.user) {
+    console.log("아직 로그인 전 상태입니다.");
+    res.redirect("/login");
+    return;
   }
 
   // 세션의 user 정보를 제거해서 logout 처리
@@ -203,7 +205,18 @@ router.route("/logout").get((req, res) => {
 //   await req.session.destroy();
 // });
 
-// 쇼핑몰 기능
+router.route("/joinus").get((req, res) => {
+  // 회원 가입 ejs 페이지 forward
+  req.app.render("member/Joinus", {}, (err, html) => {
+    res.end(html);
+  });
+});
+router.route("/joinus").post((req, res) => {
+  // 회원 가입 처리 후 목록으로 갱신
+  res.redirect("/member");
+});
+
+// ----- 쇼핑몰 기능
 router.route("/shop").get((req, res) => {
   req.app.render("shop/Shop", {}, (err, html) => {
     res.end(html);
@@ -217,10 +230,26 @@ router.route("/shop/insert").get((req, res) => {
 });
 
 router.route("/shop/modify").get((req, res) => {
-  req.app.render("shop/Modify", {}, (err, html) => {
+  const _id = parseInt(req.query._id);
+  console.log(_id);
+  const idx = carList.findIndex((car) => _id === car._id);
+  console.log(idx);
+  if (idx === -1) {
+    console.log("상품이 존재 하지 않습니다.");
+    res.redirect("/shop");
+    return;
+  }
+  req.app.render("shop/Modify", { car: carList[idx] }, (err, html) => {
+    if (err) throw err;
     res.end(html);
   });
 });
+router.route("/shop/modify").post((req, res) => {
+  console.log("POST - /shop/modify 호출");
+  console.dir(req.body);
+  res.redirect("/shop");
+});
+
 router.route("/shop/detail").get((req, res) => {
   // 쿼리로 전송된 데이터는 모두 문자열이다.
   // parseInt() 필수 "56" <-- 이런 문자열 숫자를 numeric 이라 한다..
@@ -236,26 +265,26 @@ router.route("/shop/detail").get((req, res) => {
     res.end(html);
   });
 });
-router.route("/shop/delete").get((req, res) => {
-  req.app.render("shop/Delete", {}, (err, html) => {
-    res.end(html);
-  });
-});
-router.route("/shop/cart").get((req, res) => {
-  req.app.render("shop/Cart", {}, (err, html) => {
-    res.end(html);
-  });
-});
+// router.route("/shop/delete").get((req, res) => {
+//   req.app.render("shop/Delete", {}, (err, html) => {
+//     res.end(html);
+//   });
+// });
+// router.route("/shop/cart").get((req, res) => {
+//   req.app.render("shop/Cart", {}, (err, html) => {
+//     res.end(html);
+//   });
+// });
 
 console.log(`되나? ${cnt++}}`);
 app.use("/", router);
 
 console.log(`되나? ${cnt++}}`);
 // 라우터 설정이 끝나고 나서 들어가야 됨
-// 등록되지 않은 패스에 대해
-app.use("*", (req, res) => {
-  res.status(404).send(`<h1>Error - 페이지를 찾을 수 없습니다</h1>`);
-});
+// 등록되지 않은 패스에 대해 페이지 오류 응답
+// app.use("*", (req, res) => {
+//   res.status(404).send(`<h1>Error - 페이지를 찾을 수 없습니다</h1>`);
+// });
 
 const expressErrorHandler = require("express-error-handler");
 
