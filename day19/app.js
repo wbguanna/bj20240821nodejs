@@ -30,6 +30,7 @@ app.use(
   })
 );
 
+// 임시 데이터
 const memberList = [
   {
     no: 101,
@@ -60,8 +61,23 @@ const memberList = [
     email: "hong@gmail.com",
   },
 ];
-
 let noCnt = 105;
+
+// 쇼핑몰 상품 목록
+
+// 몽고 db 에서는 primary key를 id // id는 숫자이더라도 문자열로 두긴한다.
+// row 라고 안하고 document라고 한다..
+// 여기서 carList 는 컬렉션이라고 말한다..
+// 물리적 단계? 논리적 단계로 넘어가서 쓸 수 있다..
+const carList = [
+  { _id: 111, name: "SM5", price: 3000, year: 1999, company: "SAMSUNG" },
+  { _id: 112, name: "SM7", price: 5000, year: 2013, company: "SAMSUNG" },
+  { _id: 113, name: "SONATA", price: 3000, year: 2023, company: "SAMSUNG" },
+  { _id: 114, name: "GRANDEUR", price: 4000, year: 2022, company: "HYUNDAI" },
+  { _id: 115, name: "BMW", price: 6000, year: 2019, company: "BMW" },
+  { _id: 116, name: "SONATA", price: 3000, year: 2023, company: "SAMSUNG" },
+];
+let carCnt = 117;
 
 router.route("/home").get((req, res) => {
   req.app.render("home/Home", {}, (err, html) => {
@@ -76,11 +92,6 @@ router.route("/gallery").get((req, res) => {
 });
 router.route("/profile").get((req, res) => {
   req.app.render("profile/Profile", {}, (err, html) => {
-    res.end(html);
-  });
-});
-router.route("/shop").get((req, res) => {
-  req.app.render("shop/Shop", {}, (err, html) => {
     res.end(html);
   });
 });
@@ -145,10 +156,13 @@ router.route("/login").post((req, res) => {
       console.log("로그인 실패!");
       res.redirect("/login");
     }
+  } else {
+    console.log("존재하지 않는 계정입니다.");
+    res.redirect("/login");
   }
-  req.app.render("member/Login", {}, (err, html) => {
-    res.end(html);
-  });
+  // req.app.render("member/Login", {}, (err, html) => {
+  //   res.end(html);
+  // });
 });
 
 router.route("/logout").get((req, res) => {
@@ -186,14 +200,44 @@ router.route("/logout").get((req, res) => {
 //   await req.session.destroy();
 // });
 
-router.route("/join").get((req, res) => {
-  req.app.render("member/Joinus", {}, (err, html) => {
+// 쇼핑몰 기능
+router.route("/shop").get((req, res) => {
+  req.app.render("shop/Shop", {}, (err, html) => {
     res.end(html);
   });
 });
 
-router.route("/join").post((req, res) => {
-  req.app.render("member/Joinus", {}, (err, html) => {
+router.route("/shop/insert").get((req, res) => {
+  req.app.render("shop/Insert", {}, (err, html) => {
+    res.end(html);
+  });
+});
+
+router.route("/shop/modify").get((req, res) => {
+  req.app.render("shop/Modify", {}, (err, html) => {
+    res.end(html);
+  });
+});
+router.route("/shop/detail").get((req, res) => {
+  const _id = req.query._id;
+  const idx = carList.findIndex((car) => _id === car._id);
+  if (idx === -1) {
+    console.log("상품이 존재 하지 않습니다.");
+    res.redirect("/shop");
+    return;
+  }
+  req.app.render("shop/Detail", { car: carList[idx] }, (err, html) => {
+    if (err) throw err;
+    res.end(html);
+  });
+});
+router.route("/shop/delete").get((req, res) => {
+  req.app.render("shop/Delete", {}, (err, html) => {
+    res.end(html);
+  });
+});
+router.route("/shop/cart").get((req, res) => {
+  req.app.render("shop/Cart", {}, (err, html) => {
     res.end(html);
   });
 });
@@ -210,7 +254,7 @@ const expressErrorHandler = require("express-error-handler");
 
 const errorHandler = expressErrorHandler({
   static: {
-    404: ["./public/404.html", "./public/resources/images/img404.PNG"],
+    404: "./public/404.html",
   },
 });
 
