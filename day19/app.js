@@ -5,6 +5,7 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const router = express.Router();
 const cookieParser = require("cookie-parser");
+const expressSession = require("express-session");
 
 app.set("port", 3000);
 app.set("views", path.join(__dirname, "views")); // 절대경로 // 작업디렉토리가 바뀐다면 이게 나을 수 있음
@@ -20,6 +21,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 // 쿠키 사용 미들웨어 설정
 app.use(cookieParser());
+app.use(cookieParser());
+app.use(
+  expressSession({
+    secret: "my key",
+    resave: true,
+    saveUninitialized: true,
+  })
+);
 
 const memberList = [
   {
@@ -76,10 +85,28 @@ router.route("/shop").get((req, res) => {
   });
 });
 
+// 예시 uri 상품정보 라우팅
+router.route("/process/product").get((req, res) => {
+  console.log("/process/product 호출.");
+
+  if (req.session.user === undefined) {
+    res.redirect("/public/login2.html");
+  } else {
+    res.redirect("/public/product.html");
+  }
+});
+
 router.route("/member").get((req, res) => {
-  req.app.render("member/Member", {}, (err, html) => {
-    res.end(html);
-  });
+  // 로그인이 되어있다면 member 페이지를 보여준다.
+  // 쿠키는 사용자쪽에 전달(res), 세션은 요청 들어올때 생성(req)
+  if (req.session.user !== undefined) {
+    const user = req.session.user;
+    req.app.render("member/Member", { user }, (err, html) => {
+      res.end(html);
+    });
+  } else {
+    res.redirect("/login");
+  }
 });
 
 router.route("/login").get((req, res) => {
@@ -101,14 +128,35 @@ router.route("/login").post((req, res) => {
 
   const idx = memberList.findIndex((member) => member.id === req.body.id);
   if (idx !== -1) {
-    if (memberList[idx].password === req.body.password)
+    if (memberList[idx].password === req.body.password) {
       console.log("로그인 성공");
-    // 로그인 성공 확인후 세션에 로그인정보를 저장하게
-    else console.log("로그인 실패!");
+      // 로그인 성공 확인후 세션에 로그인정보를 저장하게
+      // 세션에 로그인 정보 등록후 메인 페이지로 이동
+      req.session.user = {
+        id: req.body.id,
+        name: memberList[idx].name,
+        email: memberList[idx].email,
+        no: memberList[idx].no,
+      };
+      res.redirect("/member");
+    } else {
+      console.log("로그인 실패!");
+      res.redirect("/login");
+    }
   }
   req.app.render("member/Login", {}, (err, html) => {
     res.end(html);
   });
+});
+
+router.route("/logout").get((req, res) => {
+  console.log("/process/logout 호출됨.");
+  if (req.session.user) {
+    //로그인 된 상태
+  } else {
+    //로그인 안된 상태
+    req.session.destroy();
+  }
 });
 
 router.route("/join").get((req, res) => {
