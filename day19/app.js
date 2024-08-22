@@ -10,7 +10,28 @@ app.set("view engine", "ejs");
 
 app.use(express.static("public")); // public 폴더 정적 제공
 
-app.get("/hong", (req, res) => {
+app.get("/home", (req, res) => {
+  req.app.render("Home", {}, (err, html) => {
+    res.end(html);
+  });
+});
+
+app.get("/gallery", (req, res) => {
+  req.app.render("Home", {}, (err, html) => {
+    res.end(html);
+  });
+});
+app.get("/home", (req, res) => {
+  req.app.render("Home", {}, (err, html) => {
+    res.end(html);
+  });
+});
+app.get("/home", (req, res) => {
+  req.app.render("Home", {}, (err, html) => {
+    res.end(html);
+  });
+});
+app.get("/home", (req, res) => {
   req.app.render("Home", {}, (err, html) => {
     res.end(html);
   });
@@ -18,5 +39,5 @@ app.get("/hong", (req, res) => {
 
 const server = http.createServer(app);
 server.listen(app.get("port"), () => {
-  console.log(``); // 최신문법 쓸때는 호환이 되ㅡㄴ지 확인해보자
+  console.log(`server start: http://localhost:${app.get("port")}`); // 최신문법 쓸때는 호환이 되ㅡㄴ지 확인해보자
 });
