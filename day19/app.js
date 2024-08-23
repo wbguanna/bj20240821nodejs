@@ -71,7 +71,14 @@ let noCnt = 105;
 // 여기서 carList 는 컬렉션이라고 말한다..
 // 물리적 단계? 논리적 단계로 넘어가서 쓸 수 있다..
 const carList = [
-  { _id: 111, name: "SM5", price: 3000, year: 1999, company: "SAMSUNG" },
+  {
+    _id: 111,
+    name: "SM5",
+    price: 3000,
+    year: 1999,
+    company: "SAMSUNG",
+    img: "",
+  },
   { _id: 112, name: "SM7", price: 5000, year: 2013, company: "SAMSUNG" },
   { _id: 113, name: "SONATA", price: 3000, year: 2023, company: "SAMSUNG" },
   { _id: 114, name: "GRANDEUR", price: 4000, year: 2022, company: "HYUNDAI" },
@@ -81,11 +88,25 @@ const carList = [
 let carCnt = 117;
 
 console.log(`되나? ${cnt++}}`);
+
+//뷰 엔진 없이 fs 모듈을 이용한 뷰 렌더링
+// router.route("/text").get(function (req, res) {
+//   console.log("test ejs");
+//   fs.readFile("views/test.ejs", "utf8", function (err, data) {
+//     res.writeHead(200, { "Content-Type": "text/html" });
+//     res.end(ejs.render(data));
+//   });
+// });
+
 router.route("/home").get((req, res) => {
   req.app.render("home/Home", {}, (err, html) => {
     if (err) {
       console.error(err);
-      res.status(500).send("Error rendering the page");
+      // res.status(500).send("Error rendering the page");
+      res.status(500).send(JSON.stringify(err));
+      console.log(JSON.stringify(err));
+      const test = JSON.stringify(err);
+      console.log(test);
     } else {
       res.end(html);
     }
