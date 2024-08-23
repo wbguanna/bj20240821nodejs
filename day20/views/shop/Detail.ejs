@@ -16,6 +16,10 @@
           <td><%=car._id %></td>
         </tr>
         <tr>
+          <th>IMAGES</th>
+          <td><%=car.name %></td>
+        </tr>
+        <tr>
           <th>NAME</th>
           <td><%=car.name %></td>
         </tr>
@@ -39,8 +43,8 @@
           <td colspan="2">사진미리보기</td>
         </tr>
       <hr />
-      <!-- <a href="/shop/modify?_id=<%=//car._id%>">수정</a> | -->
-      <!-- <a href="/shop/delete?_id=<%=//car._id%>">삭제</a> | -->
+      <a href="/shop/modify?_id=<%=car._id%>">수정</a> |
+      <a href="/shop/delete?_id=<%=car._id%>">삭제</a> |
       <%-include('./ShopNav.ejs') %>
     </div>
   </body>

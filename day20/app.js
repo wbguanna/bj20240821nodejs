@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const router = express.Router();
 const cookieParser = require("cookie-parser");
 const expressSession = require("express-session");
+const multer = require("multer");
 
 app.set("port", 3000);
 // app.set("views", path.join(__dirname, "views")); // 절대경로 // 작업디렉토리가 바뀐다면 이게 나을 수 있음
@@ -13,6 +14,7 @@ app.set("views", "views"); // 상대경로 // 보안?
 app.set("view engine", "ejs");
 
 app.use(express.static("public")); // public 폴더 정적 제공
+app.use("./uploads", express.static("uploads")); // public 폴더 정적 제공
 
 // 4.16.1 버전 이후로 bodyParser가 내장되어있다함..
 // app.use(express.json());
@@ -29,7 +31,30 @@ app.use(
   })
 );
 
-app.use(router);
+// 파일 업로드를 위한 storage 설정(업로드 폴더, 파일명 등)
+var storage = multer.diskStorage({
+  destination: function (req, file, callback) {
+    callback(null, "uploads");
+  },
+  filename: function (req, file, callback) {
+    // 파일명 중복을 방지하기 위한 처리
+    // Date.now() <-- 타임스템프
+    const fileName = Buffer.from(file.originalname, "latin1").toString("utf8");
+    let index = fileName.lastIndexOf(".");
+    let newFileName = fileName.substring(0, index);
+    newFileName += Date.now();
+    newFileName += fileName.substring(index);
+    callback(null, newFileName);
+  },
+});
+// 파일 제한: 10개, 1G 이하
+var upload = multer({
+  storage: storage,
+  limits: {
+    files: 10,
+    fileSize: 1024 * 1024 * 1024,
+  },
+});
 
 let cnt = 1;
 console.log(`되나? ${cnt++}}`);
@@ -255,8 +280,8 @@ router.route("/shop/insert").get((req, res) => {
 router.route("/shop/modify").get((req, res) => {
   const _id = parseInt(req.query._id);
   console.log(_id);
-  const idx = carList.findIndex((car) => _id === car._id);
-  console.log(idx);
+  const idx = carList.findIndex((car) => car._id === _id);
+  console.dir(idx);
   if (idx === -1) {
     console.log("상품이 존재 하지 않습니다.");
     res.redirect("/shop");
@@ -283,26 +308,24 @@ router.route("/shop/detail").get((req, res) => {
     res.redirect("/shop");
     return;
   }
-  req.app.render("shop/Detail", { car: carList[idx] }, (err, html) => {
+  req.app.render("/shop/Detail", { car: carList[idx] }, (err, html) => {
     if (err) throw err;
     res.end(html);
   });
 });
-// router.route("/shop/delete").get((req, res) => {
-//   req.app.render("shop/Delete", {}, (err, html) => {
-//     res.end(html);
-//   });
-// });
-// router.route("/shop/cart").get((req, res) => {
-//   req.app.render("shop/Cart", {}, (err, html) => {
-//     res.end(html);
-//   });
-// });
+router.route("/shop/delete").get((req, res) => {
+  req.app.render("shop/Delete", {}, (err, html) => {
+    res.end(html);
+  });
+});
+router.route("/shop/cart").get((req, res) => {
+  req.app.render("shop/Cart", {}, (err, html) => {
+    res.end(html);
+  });
+});
 
-console.log(`되나? ${cnt++}}`);
 app.use("/", router);
 
-console.log(`되나? ${cnt++}}`);
 // 라우터 설정이 끝나고 나서 들어가야 됨
 // 등록되지 않은 패스에 대해 페이지 오류 응답
 // app.use("*", (req, res) => {
