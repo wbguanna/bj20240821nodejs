@@ -1,0 +1,24 @@
+carList : [
+    {
+      _id: 111,
+      name: "SM5",
+      price: 3000,
+      year: 1999,
+      company: "SAMSUNG",
+      writedate: "",
+      photos: [
+        {
+          originalname: "르노삼성sm520.png",
+          filename: "르노삼성sm520.png",
+          filesize: 371000,
+          mimetype: "img/png",
+        },
+        {
+          originalname: "르노삼성sm5.png",
+          filename: "르노삼성sm5.png",
+          filesize: 95900,
+          mimetype: "img/png",
+        },
+      ],
+    },
+  ];
