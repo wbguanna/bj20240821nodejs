@@ -21,7 +21,7 @@ app.set("views", path.join(__dirname, "../views")); // 접두사 : 절대경로 
 //   });
 app.get("/", async (req, res) => {
   if (db) {
-    const carList = await db.car.find((err, result) => {
+    db.car.find((err, result) => {
       // 몽고js 는 콜백함수로 처리해줘야함 // 옛날기술임?
       if (err) throw err;
       //   res.send(result);
