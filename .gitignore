@@ -193,6 +193,7 @@ openapi_ex/**
 
 
 day0[0-9]
+day0[0-9]*
 day0[0-9]/
 ./day0[0-9]/
 day0*/*
