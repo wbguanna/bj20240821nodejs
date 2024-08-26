@@ -8,7 +8,10 @@ const app = express();
 const mongojs = require("mongojs");
 const db = mongojs("vehicle", ["car"]);
 
+// src는 프로젝트 안에서는 절대경로로 쓸 수 잇다
 app.set("port", 3000);
+app.set("view engine", "ejs"); // .ejs 접미사로 사용
+app.set("views", path.join(__dirname, "../views")); // 접두사 : 절대경로 + 상대경로
 
 // 예전에는 콜백함수로 만들어서 사용하는 것을 선호했지만
 // 이제는 async, await 같은 promise 형으로 바뀌었다..
@@ -22,9 +25,14 @@ app.get("/", async (req, res) => {
       // 몽고js 는 콜백함수로 처리해줘야함 // 옛날기술임?
       if (err) throw err;
       //   res.send(result);
+      let html = '<table border="1">';
       result.forEach((car, i) => {
-        console.log(car, i);
+        html += `<tr><td>${car.name}</td><td>${car.price}</td>
+        <td>${car.company}</td><td>${car.year}</td></tr>`;
       });
+
+      html += "</table>";
+      res.end(html);
       //   return result;
     });
     // res.end(JSON.stringify(carList));
