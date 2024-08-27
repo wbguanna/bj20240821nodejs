@@ -8,9 +8,12 @@ const app = express();
 const { MongoClient } = require("mongodb");
 const path = require("path");
 
+const uri = "mongodb://localhost:27017";
+const client = new MongoClient(uri);
+
 const mongojs = require("mongojs");
 // const db = mongojs("vehicle", ["car"]);
-// const db = client.db();
+const db = client.db();
 // console.dir(db);
 
 // src는 프로젝트 안에서는 절대경로로 쓸 수 잇다
@@ -22,23 +25,36 @@ app.set("views", path.join(__dirname, "../views")); // 접두사 : 절대경로 
 // 예전에는 콜백함수로 만들어서 사용하는 것을 선호했지만
 // 이제는 async, await 같은 promise 형으로 바뀌었다..
 
-let db;
-
-function connectDB() {
-  const uri = "mongodb://localhost:27017";
-  const client = MongoClient(uri).connect(uri);
-}
-
+// db.car.find(function (err, data) {
+//     console.log(data);
+//   });
 app.get("/", async (req, res) => {
   if (db) {
     // 몽고js 는 콜백함수로 처리해줘야함 // 옛날기술임
+    // const car = db.collection("car").find({});
+    const cursor = db.collection("car").find({});
+    // req.app.render("CarList", { carList: result }, (err2, html) => {
+    //   if (err2) throw err2;
+    //   res.end(html);
+    // });
+    for await (const doc of cursor) {
+      console.dir(doc);
+    }
+
+    // const carList = await cars.find({}).toArray();
+    // const cursor = car.find({}, { projection: { _id: 0 } });
+    // await cursor.foreach((e) => console.log(JSON.stringify(e)));
+    for await (const c of car) {
+      res.send(c);
+    }
+    res.end("finish...");
   } else {
     res.end("db가 연결되지 않았습니다!.");
   }
 });
 
 const server = http.createServer(app);
-server.listen(app.get("port"), () => {
+server.listen(app.get("port"), async () => {
   // 白虎の剣を喰らえ！
   console.log(`mongodb test serve on: http://localhost:${app.get("port")} `);
 

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>중고차 목록</h1>
+    <table border="1" width="100%">
+      <tr>
+        <th>No</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Company</th>
+        <th>Year</th>
+      </tr>
+      <% carList.forEach((car, i)=> { %>
+      <tr>
+        <td><%=i+1 %></td>
+        <td><%=image %></td>
+        <td><%=car.name %></td>
+        <td><%=car.price %></td>
+        <td><%=car.company %></td>
+        <td><%=car.year %></td>
+      </tr>
+      <% }) %> %>
+    </table>
+  </body>
+</html>

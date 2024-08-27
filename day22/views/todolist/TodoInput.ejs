@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <%-include('../inc/Top.ejs')%>
+    <hr />
+    <div class="container">
+      <h2>Todo Input</h2>
+      <form action="input" method="post">
+        <table>
+          할일:
+          <input type="text" name="title" id="" />
+          <br />
+          확인:
+          <select name="done" id="">
+            <option value="false">미완료</option>
+            <option value="true">완료</option>
+          </select>
+        </table>
+      </form>
+    </div>
+  </body>
+</html>
