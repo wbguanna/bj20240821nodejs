@@ -402,8 +402,11 @@ app.post("/todo/modify", async (req, res) => {
 
     // 실제 mongoDB에 저장되는 것은 단순 해시문자열이 아니라
     // ObjectId 객체다..
+    console.log("$$$$$$$$$$");
+    console.dir(req);
+    // console.log(typeof req.query._id + req.query._id);
     const filter = { _id: new ObjectId(req.query._id).toHexString() };
-    const option = { upsert: true };
+    const option = { upsert: false };
     const doneRequest = req.body.done == "true" ? true : false;
     const updateDoc = {
       $set: {
@@ -411,18 +414,35 @@ app.post("/todo/modify", async (req, res) => {
         done: doneRequest,
       },
     };
+    console.dir(updateDoc);
     const fetch = await collection.updateOne(filter, updateDoc, option);
+
+    console.dir(fetch);
     console.log("Fetched document:", fetch);
     // res.render(");
-    res.redirect("/todo/list");
+
+    // 리다이렉트를 세분화 시키기?
   } catch (e) {
     console.dir(e);
   } finally {
     await client.close();
   }
+  res.redirect("/todo/list");
 });
-// 단건삭제
-app.get("/todo/delete", (req, res) => {
+// 단건삭제 // get 쓰는건 절대 좋은 방법이 아님
+// 그래서 path 파라미터를 쓰는것이 좋을 것 같다
+app.get("/todo/delete", async (req, res) => {
+  try {
+    await client.connect();
+    const database = client.db(dbName);
+    const collection = database.collection(collectionName);
+    const query = { _id: new ObjectId(req.query._id) };
+    const result = await collection.deleteOne(query);
+
+    console.dir(result);
+  } finally {
+    await client.close();
+  }
   res.redirect("/todo/list");
 });
 // --- TodoList 기능 구현 끝
