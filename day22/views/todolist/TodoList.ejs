@@ -21,8 +21,8 @@
         <tr>
           <td><%=idx+1%></td>
           <td><%=todo.title%></td>
-          <td><a href="">수정</a></td>
-          <td><a href="delete?_id">삭제</a></td>
+          <td><a href="modify?_id=<%=todo._id%>">수정</a></td>
+          <td><a href="delete?_id=<%=todo._id%>">삭제</a></td>
         </tr>
         <% }); %>
       </table>

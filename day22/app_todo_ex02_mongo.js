@@ -302,12 +302,12 @@ const todoList = [
   { _id: 104, title: "todo4", done: false },
 ];
 
-[
-  { title: "todo1", done: false },
-  { title: "todo2", done: false },
-  { title: "todo3", done: false },
-  { title: "todo4", done: false },
-];
+// [
+//   { title: "todo1", done: false },
+//   { title: "todo2", done: false },
+//   { title: "todo3", done: false },
+//   { title: "todo4", done: false },
+// ];
 let todoNoCnt = 105;
 
 app.get("/todo", (req, res) => {

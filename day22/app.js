@@ -293,13 +293,12 @@ router.route("/shop/cart").get((req, res) => {
 // app.get()은 ejs 뷰로 forward 시켜주기
 // app.post()은 DB와 연동해서 처리하는 process역할
 // forward란, 주소의 내용이 아닌 다른 파일의 내용 표시하는 것.
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 
 const client = new MongoClient("mongodb://localhost:27017");
 const dbName = "comstudy";
 const collectionName = "todolist";
 
-const todoList = [];
 /* 몽고디비에 데이터 추가
 db.todolist.insertMany([
 {title:"밥먹기2", done:false},
@@ -308,6 +307,10 @@ db.todolist.insertMany([
 {title:"친구랑 놀기2", done:false}
 ])
 */
+app.get("/todo", (req, res) => {
+  res.redirect("/todo/list");
+});
+
 app.get("/todo/list", async (req, res) => {
   //res.render("todolist/TodoList", {todoList});
   try {
@@ -317,11 +320,13 @@ app.get("/todo/list", async (req, res) => {
     const QUERY = {};
     // 정렬 순서 유지용으로 수정시간, 작성시간 등이 있으면 좋겠지?
 
+    const todoList = []; // todolist 매번 새로고침
     const cursor = todoCollection.find(QUERY, {});
     if ((await todoCollection.countDocuments(QUERY)) === 0) {
       console.log("No documents found!");
     }
     for await (const doc of cursor) {
+      doc._id = doc._id.toString();
       todoList.push(doc);
       console.dir(doc);
     }
@@ -340,18 +345,81 @@ app.get("/todo/input", (req, res) => {
 app.get("/todo/detail", (req, res) => {
   res.render("todolist/TodoDetail", {});
 });
-app.get("/todo/modify", (req, res) => {
-  res.render("todolist/TodoModify", {});
+app.get("/todo/modify", async (req, res) => {
+  // const testTodo = {
+  //   _id: "66cd36c65a84a8de93f074c7",
+  //   title:"테스트임당",
+  //   done:false
+  // }
+  // res.render("todolist/TodoModify", {testTodo});
+  // res.render("todolist/TodoModify", {});
+
+  try {
+    await client.connect();
+    const database = client.db(dbName);
+    const collection = database.collection(collectionName);
+
+    // 실제 mongoDB에 저장되는 것은 단순 해시문자열이 아니라
+    // ObjectId 객체다..
+    const query = { _id: new ObjectId(req.query._id) };
+    const todo = await collection.findOne(query);
+    console.log("Fetched document:", todo);
+    res.render("todolist/TodoModify", { todo });
+  } finally {
+    await client.close();
+  }
 });
 // 저장 처리 - 몽고디비와 연동
-app.post("/todo/input", (req, res) => {
+app.post("/todo/input", async (req, res) => {
+  const doc = {
+    title: req.body.title,
+    done: req.body.done == "true" ? true : false,
+  };
+
+  try {
+    client.connect();
+    const database = client.db(dbName);
+    const todoCollection = database.collection(collectionName);
+    const QUERY = {};
+    // 정렬 순서 유지용으로 수정시간, 작성시간 등이 있으면 좋겠지?
+
+    const result = await todoCollection.insertOne(doc);
+    res.redirect("/todo/list");
+  } finally {
+    await client.close();
+  }
+
   res.redirect("/todo/list");
 });
 app.post("/todo/detail", (req, res) => {
   res.redirect("/todo/list");
 });
-app.post("/todo/modify", (req, res) => {
-  res.redirect("/todo/list");
+app.post("/todo/modify", async (req, res) => {
+  try {
+    await client.connect();
+    const database = client.db(dbName);
+    const collection = database.collection(collectionName);
+
+    // 실제 mongoDB에 저장되는 것은 단순 해시문자열이 아니라
+    // ObjectId 객체다..
+    const filter = { _id: new ObjectId(req.query._id).toHexString() };
+    const option = { upsert: true };
+    const doneRequest = req.body.done == "true" ? true : false;
+    const updateDoc = {
+      $set: {
+        title: req.body.title,
+        done: doneRequest,
+      },
+    };
+    const fetch = await collection.updateOne(filter, updateDoc, option);
+    console.log("Fetched document:", fetch);
+    // res.render(");
+    res.redirect("/todo/list");
+  } catch (e) {
+    console.dir(e);
+  } finally {
+    await client.close();
+  }
 });
 // 단건삭제
 app.get("/todo/delete", (req, res) => {
